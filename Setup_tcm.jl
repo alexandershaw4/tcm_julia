@@ -17,13 +17,16 @@ P['A'] = ones(ns,ns) # connectivity
 P['B'] = ones(ns,ns) # trial-spec connectivity
 P['C'] = ones(ns,1)  # inputs
 P['D'] = [0 0]       # delays [intr] [extr]
-P['E'] = 0;          # background activity
-P['G'] = 0;          # trial spec intrinsics (off)
+P['E'] = [0]         # background activity
+P['G'] = [0]         # trial spec intrinsics (off)
 P['H'] = zeros(ns,np,nk)
 
 # State contributions to output
 P['J'] = zeros(ns,np,nk)
-J[1,1,1] = log(.8)
-J[1,2,1] = log(.8)
-J[1,4,1] = log(.8)
-J[1,6,1] = log(.8)
+P['J'][1,[1 2 4 6],1] = (log(Diagonal([.2,.8, .2, .2]))).diag'
+P['L'] = [4]
+
+# Other parameters
+P['S']  = [0]
+P['T']  = zeros(ns,4)
+P['V'] = [0 0 0 0 0 0 0 0]
