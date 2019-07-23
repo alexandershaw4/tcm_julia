@@ -20,7 +20,7 @@ function solvefixedpoint(P,M)
     dnx = 0;
 
     for i = 1:128
-        f,dfdx = tcm0(M['x'],u,P,M);
+        f,dfdx = tcm0(M['x'],M['u'],P,M);
         dfdx   = reshape(dfdx[:],ns*np*nk,ns*np*nk);
         dx     = -dfdx\f[:];
 

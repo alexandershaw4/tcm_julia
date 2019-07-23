@@ -28,6 +28,6 @@ P,M = Init_Params();
 x = solvefixedpoint(P,M);
 
 # check the integration & transfer functions [integrate.jl]
-k, w, y_out, y, pst = integrate(P,M,U);
+k, w, y_out, y, pst = integrate(P,M);
 
 # fit the model using AO curvature optimisation

@@ -18,7 +18,7 @@
 import DataStructures
 
 function jaco(fun,x,u,P,M,order)
-    f0 = eval(fun(x,u,P,M));
+    f0 = fun(x,u,P,M);
     fx = copy(f0);
     j  = zeros( length(x), length(x) );
     V  = copy(f0);

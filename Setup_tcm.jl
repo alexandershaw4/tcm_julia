@@ -13,7 +13,8 @@ function Init_Params()
 
     # Fill out M struct
     M['x'] = zeros(1,8,7);
-
+    M['u'] = [0];
+    
     # Fill out Parameter struct
     P['A'] = ones(ns,ns); # Extrns connectivity [ampa]
     P['N'] = ones(ns,ns); # Extrns connectivity [nmda]

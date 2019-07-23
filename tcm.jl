@@ -12,6 +12,11 @@ function tcm0(x,u,P,M)
     # a wrapper on the tcm code that does 1st order differentiation for
     # computation of the delay operator
 
+    # state dimensions
+    ns = size(M['x'],1);
+    np = size(M['x'],2);
+    nk = size(M['x'],3);
+
     # append Jacobian (J'*J)
     J,f = jaco(tcm,x,u,P,M,1);
 
@@ -22,12 +27,24 @@ function tcm0(x,u,P,M)
     Ss = kron(ones(nk,nk),kron(ones(np,np),Diagonal(ones(ns))));
 
     # thalamo-cortical delay operators
+    f0,GEa,GIa = tcm(x,u,P,M);
+
+    # binary connectivity
+    A = [1  0  1  0  0  1  0  1
+         1  1  1  0  0  0  0  0
+         1  1  1  0  0  0  0  0
+         0  1  0  1  1  0  0  0
+         0  0  0  1  1  0  0  0
+         0  0  0  1  1  1  0  1
+         0  0  0  0  0  0  1  1
+         0  0  0  0  0  1  1  1];
+
     d0 = exp.(P['t']);
     Tc = zeros(np,np);
     Tc[7:8,1:6] = repeat([60*d0[1]],2,6);
     Tc[1:6,7:8] = repeat([20*d0[2]],6,2);
     Tc          = -Tc/1000;
-    Tc          = Tc .* (GEa.>0) + (GIa.>0);
+    Tc          = Tc .* A;
     Tc = kron(ones(nk,nk),kron(Tc,Diagonal(ones(ns))));
 
     # concatenated inverted delay matrix

@@ -10,7 +10,6 @@ include("jaco.jl");
 include("solvefixedpoint.jl");
 include("Setup_tcm.jl");
 include("dic_to_vect.jl");
-include("integrate.jl");
 include("Ncdf.jl");
 include("mg_switch.jl");
 
@@ -23,6 +22,11 @@ function integrate(P,M)
     Fs  = 1/dt;
     tn  = 2;
     pst = (0:dt:tn-dt)*1000;
+
+    # state dimensions
+    ns = size(M['x'],1);
+    np = size(M['x'],2);
+    nk = size(M['x'],3);    
 
     # input (over time)
     mu = exp.(P['R']);
@@ -52,7 +56,7 @@ function integrate(P,M)
     # Runge-Kutta (1st order) numerical integration w/ Delays
     for i = 1:length(pst)
         for j = 1:2
-            global v += real(Q) * tcm(v,drive[i],P,M)[:] ;
+            v += real(Q) * tcm(v,drive[i],P,M)[:] ;
         end
         # record as expansion about fp
         y[:,i] = v - x;
@@ -76,5 +80,5 @@ function integrate(P,M)
 
     k = sum(y_out,dims=1);
 
-    return k w y_out y pst
+    return k, w, y_out, y, pst
 end
