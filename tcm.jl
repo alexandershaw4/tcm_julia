@@ -8,7 +8,44 @@ include("Ncdf.jl")        # j.d. williams CumulDistFun
 include("dic_to_vect.jl") # [Un]Vectorising functions
 include("jaco.jl")        # numerical differentiation routine
 
+function tcm0(x,u,P,M)
+    # a wrapper on the tcm code that does 1st order differentiation for
+    # computation of the delay operator
+
+    # append Jacobian (J'*J)
+    J,f = jaco(tcm,x,u,P,M,1);
+
+    # append delay operator[s]
+    D  = [.6 16];
+    d  = -D.*exp.(P['D'])/1000;
+    Sp = kron(ones(nk,nk),kron(Diagonal(ones(np)),Diagonal(ones(ns))));
+    Ss = kron(ones(nk,nk),kron(ones(np,np),Diagonal(ones(ns))));
+
+    # thalamo-cortical delay operators
+    d0 = exp.(P['t']);
+    Tc = zeros(np,np);
+    Tc[7:8,1:6] = repeat([60*d0[1]],2,6);
+    Tc[1:6,7:8] = repeat([20*d0[2]],6,2);
+    Tc          = -Tc/1000;
+    Tc          = Tc .* (GEa.>0) + (GIa.>0);
+    Tc = kron(ones(nk,nk),kron(Tc,Diagonal(ones(ns))));
+
+    # concatenated inverted delay matrix
+    Dp = (Ss.==0).*Ss;
+    Ds = ((Sp.==0).*Sp) + (Ss.>0);
+    D  = d[2]*Dp + d[1]*Ds + Tc;
+
+    # Delay operator [Q]:
+    #                 dx(t)/dt = f(x(t - d)) = inv(1 - D.*dfdx)*f(x(t))
+    #                          = Q*f = Q*J*x(t)
+    Q = inv( Diagonal(ones(56)) - D.*J );
+
+    # Return order - these go for integration
+    return f, J, Q
+end
+
 function tcm(x, u, P, M)
+    # the main state equations for the conductance model
 
     # state space dimensions
     ns = size(M['x'],1);
@@ -122,7 +159,7 @@ function tcm(x, u, P, M)
     U = C*u
 
     # new state vector
-    f = float(x);
+    f = float(copy(x));
 
     for i = 1:ns
 
@@ -168,35 +205,5 @@ function tcm(x, u, P, M)
 
     end # end regions loop
 
-    # append Jacobian (J'*J)
-    J = jaco('tcm',x,u,P,M,1);
-    J = J'*J;
-
-    # append delay operator[s]
-    D  = [.6 16];
-    d  = -D.*exp.(P['D'])/1000;
-    Sp = kron(ones(nk,nk),kron(Diagonal(ones(np)),Diagonal(ones(ns))));
-    Ss = kron(ones(nk,nk),kron(ones(np,np),Diagonal(ones(ns))));
-
-    # thalamo-cortical delay operators
-    d0 = exp.(P['t']);
-    Tc = zeros(np,np);
-    Tc[7:8,1:6] = repeat([60*d0[1]],2,6);
-    Tc[1:6,7:8] = repeat([20*d0[2]],6,2);
-    Tc          = -Tc/1000;
-    Tc          = Tc .* (GEa.>0) + (GIa.>0);
-    Tc = kron(ones(nk,nk),kron(Tc,Diagonal(ones(ns))));
-
-    # concatenated inverted delay matrix
-    Dp = (Ss.==0).*Ss;
-    Ds = ((Sp.==0).*Sp) + (Ss.>0);
-    D  = d[2]*Dp + d[1]*Ds + Tc;
-
-    # Delay operator [Q]:
-    #                 dx(t)/dt = f(x(t - d)) = inv(1 - D.*dfdx)*f(x(t))
-    #                          = Q*f = Q*J*x(t)
-    Q = inv( Diagonal(ones(56)) - D.*J );
-
-    # Return order
-    return f, J, Q
+    return f
 end

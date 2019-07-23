@@ -17,16 +17,16 @@
 
 import DataStructures
 
-function(fun,x,u,P,M,order)
+function jaco(fun,x,u,P,M,order)
     f0 = eval(fun(x,u,P,M));
-    fx = f0;
+    fx = copy(f0);
     j  = zeros( length(x), length(x) );
-    V  = f0;
+    V  = copy(f0);
 
     for i = 1:length(x)
 
-        x0 = vec(x);
-        x1 = vec(x);
+        x0 = reshape(float(copy(x)),1,length(x));
+        x1 = reshape(float(copy(x)),1,length(x));
         d  = x[i] + V[i]*exp(-8);
 
         if d == 0
@@ -36,18 +36,18 @@ function(fun,x,u,P,M,order)
         x0[i] = x0[i] + d;
         x1[i] = x1[i] - d;
 
-        f0 = eval(fun,reshape(x0,size(x)),u,P,M);
-        f1 = eval(fun,reshape(x1,size(x)),u,P,M);
+        f0 = fun(reshape(x0,size(x)),u,P,M);
+        f1 = fun(reshape(x1,size(x)),u,P,M);
         j[i,:] = (f0 - f1) / (2d);
 
         if order == 2
             deriv1 = (f0 - f1) / 2 / d;
             deriv2 = (f0 - 2 * fx + f1) / d^2;
-            j[i,:] = feriv1 ./ deriv2;
+            j[i,:] = deriv1 ./ deriv2;
         end
     end
 
     j = j';
 
-    return j
+    return j, fx
 end
