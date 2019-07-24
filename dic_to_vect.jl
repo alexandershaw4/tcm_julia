@@ -8,7 +8,7 @@ function dict_to_vec(d)
 end
 
 function vec_to_dict(Px,d0)
-    NP = copy(P)
+    NP = copy(d0);
 
     if Px[1] == float
         # remove useless first entry
