@@ -3,6 +3,9 @@
 
 function solvefixedpoint(P,M)
 
+    M = copy(M);
+    P = copy(P);
+
     ns = size(M['x'],1);
     np = size(M['x'],2);
     nk = size(M['x'],3);

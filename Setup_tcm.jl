@@ -14,13 +14,13 @@ function Init_Params()
     # Fill out M struct
     M['x'] = zeros(1,8,7);
     M['u'] = [0];
-    
+
     # Fill out Parameter struct
     P['A'] = ones(ns,ns); # Extrns connectivity [ampa]
     P['N'] = ones(ns,ns); # Extrns connectivity [nmda]
     P['B'] = ones(ns,ns); # trial-spec extrns connectivity [ampa]
     P['n'] = ones(ns,ns); # trial-spec extrns connectivity [nmda]
-    P['C'] = ones(ns,1);  # inputs
+    P['C'] = ones(ns,4);  # inputs
     P['D'] = [0 0];       # delays [intr], [extr]
     P['E'] = [0];         # background activity
     P['G'] = [0];         # trial spec intrinsics (off)

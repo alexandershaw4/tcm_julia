@@ -68,11 +68,11 @@ function tcm(x, u, P, M)
     x  = reshape(x,size(M['x']));
 
     # extrinsics, modulations & inputs
-    A  = exp(P['A']);
-    AN = exp(P['N'])
-    B  = exp(P['B']);
-    BN = exp(P['n'])
-    C  = exp(P['C']);
+    A  = exp.(P['A']);
+    AN = exp.(P['N'])
+    B  = exp.(P['B']);
+    BN = exp.(P['n'])
+    C  = exp.(P['C']);
 
     # intrinsic connectivity
     G = exp.(P['H']);
@@ -167,10 +167,10 @@ function tcm(x, u, P, M)
     an[:,5] = AN*m[8];
 
     # Average background
-    BE = exp(P['B']) * 0.8
+    BE = exp.(P['B']) * 0.8
 
     # Inputs
-    U = C*u
+    U = C.*u
 
     # new state vector
     f = float(copy(x));

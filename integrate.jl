@@ -26,7 +26,7 @@ function integrate(P,M)
     # state dimensions
     ns = size(M['x'],1);
     np = size(M['x'],2);
-    nk = size(M['x'],3);    
+    nk = size(M['x'],3);
 
     # input (over time)
     mu = exp.(P['R']);
@@ -62,8 +62,9 @@ function integrate(P,M)
         y[:,i] = v - x;
     end
 
-    # Compute forward projection: J'*y
+    # Compute forward projection: L*(J'*y)
     LFP = exp.(P['J'][:])'*y;
+    LFP = LFP.*exp.(P['L']);
 
     # Use FFTW FFT
     y0 = rfft(y') |> fftshift;
