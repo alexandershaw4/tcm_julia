@@ -26,9 +26,6 @@ function tcm0(x,u,P,M)
     Sp = kron(ones(nk,nk),kron(Diagonal(ones(np)),Diagonal(ones(ns))));
     Ss = kron(ones(nk,nk),kron(ones(np,np),Diagonal(ones(ns))));
 
-    # thalamo-cortical delay operators
-    f0,GEa,GIa = tcm(x,u,P,M);
-
     # binary connectivity
     A = [1  0  1  0  0  1  0  1
          1  1  1  0  0  0  0  0
